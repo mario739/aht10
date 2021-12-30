@@ -26,7 +26,7 @@ aht10_status aht10_get_status(aht10_config_t *obj)
 
 aht10_status_fnc aht10_start_measurement(aht10_config_t *obj)
 { 
-  aht10_status_fnc status = obj->writeI2C(obj->addresSlave,AHT10_CMD_INITIALIZE,1);
+  aht10_status_fnc status = obj->writeI2C(obj->addresSlave,(uint8_t)AHT10_CMD_INITIALIZE,1);
   if (status==0)
   {
       obj->delay_ms_I2C(AHT10_DELAY_MEASUREMENT);
@@ -40,7 +40,7 @@ aht10_status_fnc aht10_start_measurement(aht10_config_t *obj)
 
 aht10_status_fnc aht10_launch_measurement(aht10_config_t *obj)
 {
-  aht10_status_fnc status = obj->writeI2C(obj->addresSlave,AHT10_CMD_TRIGGER_MEASUREMENT ,3);
+  aht10_status_fnc status = obj->writeI2C(obj->addresSlave,(uint8_t)AHT10_CMD_TRIGGER_MEASUREMENT ,3);
   if (status==0)
   {
       obj->delay_ms_I2C(AHT10_DELAY_LAUNCH_MEASUREMENT);
@@ -82,4 +82,13 @@ aht10_status_fnc aht10_get_temperature(aht10_config_t*obj, uint8_t *data)
 
   return aht10_OK;
 
+}
+
+aht10_status_fnc  aht10SoftReset(aht10_config_t*obj)
+{
+  uint8_t cmd[3]={0xBA,0,1};
+  obj->writeI2C(obj->addresSlave,cmd,1);
+  obj->delay_ms_I2C(AHT10_DELAY_RESET);
+
+  return aht10_OK;
 }

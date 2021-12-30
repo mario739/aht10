@@ -8,14 +8,17 @@ aht10_status_fnc   read_I2C_STM32L432_port(uint8_t addr, uint8_t* buffer, uint8_
 aht10_status_fnc   write_I2C_STM32L432_port(uint8_t addr, uint8_t* buffer, uint8_t amount);
 void   delay_STM32L432_port(uint8_t delay);
 
+
+uint8_t comando;
+
 aht10_status_fnc  read_I2C_STM32L432_port(uint8_t addr,uint8_t* buffer, uint8_t amount)
 {
     uint8_t trama[6]={0,0,0,0,0,0};
-    uint8_t data=0;
+    uint8_t data2=0;
 
     if (amount==1)
     {
-        *buffer=data;
+        *buffer=data2;
     }
     else if (amount==6)
     {
@@ -30,6 +33,8 @@ aht10_status_fnc  read_I2C_STM32L432_port(uint8_t addr,uint8_t* buffer, uint8_t 
 }
 aht10_status_fnc   write_I2C_STM32L432_port(uint8_t addr, uint8_t* buffer, uint8_t amount)
 {
+
+    comando=0xBA;
     return aht10_OK;
 }
 
@@ -42,7 +47,6 @@ aht10_config_t aht10config;
 
 void setUp(void)
 {
-    
     aht10Init(&aht10config,write_I2C_STM32L432_port,read_I2C_STM32L432_port,delay_STM32L432_port,AHT10_ADDRESS_SLAVE  );
 }
 
@@ -81,5 +85,10 @@ void test_probar_funcion_obtener_temperatura(void)
 {
     uint8_t data=0;
     TEST_ASSERT_EQUAL(0,aht10_get_temperature(&aht10config,&data));
-    TEST_ASSERT_EQUAL(0,data);
+    TEST_ASSERT_EQUAL(206,data);
+}
+
+void test_probar_funcion_reset(void)
+{
+    TEST_ASSERT_EQUAL(AHT10_CMD_SOFT_RESET,comando);
 }

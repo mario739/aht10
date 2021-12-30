@@ -53,8 +53,6 @@ typedef enum
 }aht10_status;
 
 
-
-
 typedef aht10_status_fnc ( *aht10WriteFcn_t )(uint8_t , uint8_t*, uint8_t); /*!<Puntero a funcion  que escribira en I2C      */
 
 typedef aht10_status_fnc ( *aht10ReadFcn_t )(uint8_t , uint8_t*, uint8_t);  /*!<Puntero a funcion  que leera    en I2C       */
@@ -84,4 +82,5 @@ aht10_status_fnc aht10_get_humedity(aht10_config_t*obj, uint8_t *data);
 
 aht10_status_fnc aht10_get_temperature(aht10_config_t*obj, uint8_t *data);
 
+aht10_status_fnc aht10SoftReset(aht10_config_t*obj);
  #endif
