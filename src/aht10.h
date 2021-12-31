@@ -3,17 +3,13 @@
 
  #include <stdint.h> 
  
-    
- 
  /** @defgroup Comandos del driver
  *  @{
  */
-#define AHT10_ADDRESS_SLAVE                 (uint8_t) 0x38    /*!<Direccion de esclavo 7 bits       */
+#define AHT10_ADDRESS_SLAVE                 (uint8_t) 0x38    /*!< Direccion de esclavo 7 bits       */
 #define AHT10_CMD_INITIALIZE                (uint8_t) 0xE1    /*!< Comando de inicializacion        */
 #define AHT10_CMD_TRIGGER_MEASUREMENT       (uint8_t) 0xAC    /*!< Comando para iniciar la lectura  */
 #define AHT10_CMD_SOFT_RESET                (uint8_t) 0xBA    /*!< Comando para reiniciar el sensor */
-#define AHT10_DATA_0                        (uint8_t) 0x33    /*!< Comando auxiliar                 */
-#define AHT10_DATA_1                        (uint8_t) 0x00    /*!< Comando auxiliar                 */
 /**
   * @}
   */
@@ -83,4 +79,6 @@ aht10_status_fnc aht10_get_humedity(aht10_config_t*obj, uint8_t *data);
 aht10_status_fnc aht10_get_temperature(aht10_config_t*obj, uint8_t *data);
 
 aht10_status_fnc aht10SoftReset(aht10_config_t*obj);
+
+
  #endif
