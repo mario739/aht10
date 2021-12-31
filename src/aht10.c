@@ -1,4 +1,15 @@
 
+/**
+ * @file aht10.c
+ * @author Mario Aguilar (fernando_aguilar731010@gmail.com)
+ * @brief Driver para el sensor aht10
+ * @version v1
+ * @date 2021-12-31
+ * 
+ * @copyright Copyright (c) 2021
+ * 
+ */
+
 #include "aht10.h"
 
 void aht10Init(aht10_config_t *obj, aht10WriteFcn_t fncWritePort, aht10ReadFcn_t fncReadPort, delay1ms_t fncDelayPort,uint16_t addressSlave)
@@ -13,7 +24,7 @@ aht10_status aht10_get_status(aht10_config_t *obj)
 {
   uint8_t buffer;
   obj->readI2C(obj->addresSlave,&buffer,1);
-  if (buffer>>7==0)
+  if (buffer>>7==0)                     //El estado del sensor esta en la posicion 8 del byte 
   {
     return SENSOR_IDLE;
   }

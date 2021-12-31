@@ -1,3 +1,13 @@
+ /**
+ * @file aht10
+ * @author Mario Aguilar (fernando_aguilar731010@gmail.com)
+ * @brief Driver para el sensor aht10
+ * @version v1
+ * @date 2021-12-31
+ * 
+ * @copyright Copyright (c) 2021
+ * 
+ */
  #ifndef AHT10_H
  #define AHT10_H
 
@@ -34,27 +44,29 @@
   * @}
   */
 
+
+//! Tipo de datos para manejar el estado de la funcion 
 typedef enum
 {
-  aht10_OK      = 0,
-  aht10_ERROR   = 1,
-  aht10_BUSY    = 2,
-  aht10_TIMEOUT = 3,
+  aht10_OK      = 0,      //!< La funcion se ejecuto correctamente 
+  aht10_ERROR   = 1,      //!< La funcion produjo un error
 } aht10_status_fnc;
 
+//! Tipo de datos para manejar el estado del sensor 
 typedef enum
 {
-    SENSOR_IDLE,
-    SENSOR_BUSY,
+    SENSOR_IDLE,        //!< Sensor ya realizo para conversion y los datos ya se pueden leer 
+    SENSOR_BUSY,        //!< Sensor ocupado  realizando la convercion  
 }aht10_status;
 
 
-typedef aht10_status_fnc ( *aht10WriteFcn_t )(uint8_t , uint8_t*, uint8_t); /*!<Puntero a funcion  que escribira en I2C      */
+typedef aht10_status_fnc ( *aht10WriteFcn_t )(uint8_t , uint8_t*, uint8_t); /*!<Puntero a funcion  de callback para la escritura     */
 
-typedef aht10_status_fnc ( *aht10ReadFcn_t )(uint8_t , uint8_t*, uint8_t);  /*!<Puntero a funcion  que leera    en I2C       */
+typedef aht10_status_fnc ( *aht10ReadFcn_t )(uint8_t , uint8_t*, uint8_t);  /*!<Puntero a funcion de callback para la lectura*/
 
-typedef void (*delay1ms_t)(uint8_t);                         /*!<Puntero a funcion para el delay*/
+typedef void (*delay1ms_t)(uint8_t);                                        /*!<Puntero a funcion de callback para el delay*/
 
+//! Estructura para la configuracion del sensor 
 typedef struct 
 {
     aht10WriteFcn_t  writeI2C;
@@ -65,19 +77,78 @@ typedef struct
 }aht10_config_t;
 
 
+/*************************************************************************************************
+	 *  @brief Funcion para inicializar el driver AHT10
+     *
+     *  @details
+     *   Se asignan las funciones pasadas por parametros a la estructura que tambien se pasa como parametro
+     *
+	 *  @param		obj	            structura del tipo aht10_config_t donde se asignaran las funciones de callback
+   *  @param    fncWritePort    Funcion de escritura por i2c propia del hardware
+   *  @param    fncReadPort     Funcion de leer por i2c propia del hardware
+   *  @param    fncDelayPor     Retardos
+   *  @param    addressSlave    Direccion del esclavo
+	 *  @return     None.
+	 *  
+***************************************************************************************************/
 
 void aht10Init(aht10_config_t *obj, aht10WriteFcn_t fncWritePort, aht10ReadFcn_t fncReadPort, delay1ms_t fncDelayPort,uint16_t addressSlave);
 
+/**
+ * @brief Funcion para obtener el estado del sensor
+ * 
+ * @param obj Estructura que contiene la configuracion del driver 
+ * @return enumerador que devuelve el estado de la funcion 
+ */
 aht10_status aht10_get_status(aht10_config_t *obj);
+
+/**
+ * @brief Funcion para inizializar el sensor 
+ * 
+ * @param obj Estructura que contiene la configuracion del driver 
+ * @return aht10_status_fnc  enumerador que devuelve el estado de la funcion
+ */
 
 aht10_status_fnc aht10_start_measurement(aht10_config_t *obj);
 
+/**
+ * @brief Funcion que lanza el inicio la conversion
+ * 
+ *  @details
+ *      Se inicializa la medicion de temperatura y humedad 
+ * @param obj Estructura que contiene la configuracion del driver 
+ * @return aht10_status_fnc enumerador que devuelve el estado de la funcion
+ */
+
 aht10_status_fnc aht10_launch_measurement(aht10_config_t *obj);
+
+/**
+ * @brief Funcion para obtener el dato de la humedad actual 
+ * 
+ * @param obj Estructura que contiene la configuracion del driver 
+ * @param data variable donde se asignara el resultado de la humedad 
+ * @return aht10_status_fnc enumerador que devuelve el estado de la funcion
+ */
 
 aht10_status_fnc aht10_get_humedity(aht10_config_t*obj, uint8_t *data);
 
+
+/**
+ * @brief Funcion para obtener la temperatura actual
+ * 
+ * 
+ * @param obj Estructura que contiene la configuracion del driver
+ * @param data variable donde se asignara el resultado de la temperatura
+ * @return aht10_status_fnc enumerador que devuelve el estado de la funcion
+ */
 aht10_status_fnc aht10_get_temperature(aht10_config_t*obj, uint8_t *data);
 
+/**
+ * @brief Funcion que resetea el modulo 
+ * 
+ * @param obj Estructura que contiene la configuracion del driver
+ * @return aht10_status_fnc enumerador que devuelve el estado de la funcion
+ */
 aht10_status_fnc aht10SoftReset(aht10_config_t*obj);
 
 
