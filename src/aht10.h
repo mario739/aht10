@@ -27,10 +27,10 @@
 /** @defgroup Definicion de retardos 
  * 
  */
-#define AHT10_DELAY_POWER_ON                 (uint8_t) 40      /*!<Retardo para el encendido        */
-#define AHT10_DELAY_RESET                    (uint8_t) 25      /*!<Retardo de reset                 */
-#define AHT10_DELAY_MEASUREMENT              (uint8_t) 100     /*!<Retardo inicializacion           */
-#define AHT10_DELAY_LAUNCH_MEASUREMENT       (uint8_t) 80      /*!<Retardo para la medicion         */
+#define AHT10_DELAY_POWER_ON                  40U      /*!<Retardo para el encendido        */
+#define AHT10_DELAY_RESET                     25U      /*!<Retardo de reset                 */
+#define AHT10_DELAY_MEASUREMENT               100U     /*!<Retardo inicializacion           */
+#define AHT10_DELAY_LAUNCH_MEASUREMENT        80U      /*!<Retardo para la medicion         */
 /**
   * @}
   */
@@ -150,6 +150,5 @@ aht10_status_fnc aht10_get_temperature(aht10_config_t*obj, uint8_t *data);
  * @return aht10_status_fnc enumerador que devuelve el estado de la funcion
  */
 aht10_status_fnc aht10SoftReset(aht10_config_t*obj);
-
 
  #endif

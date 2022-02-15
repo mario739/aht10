@@ -38,15 +38,12 @@ aht10_status_fnc aht10_start_measurement(aht10_config_t *obj)
 { 
   uint8_t cmd = AHT10_CMD_INITIALIZE;
   aht10_status_fnc status = obj->writeI2C(obj->addresSlave,&cmd,1);
-  if (status==0)
+  if (status==aht10_OK)
   {
     obj->delay_ms_I2C(AHT10_DELAY_MEASUREMENT);
     return aht10_OK;
   }
-  else
-  {
-    return  status;
-  }
+  return  status;
 }
 
 aht10_status_fnc aht10_launch_measurement(aht10_config_t *obj)
@@ -93,3 +90,4 @@ aht10_status_fnc  aht10SoftReset(aht10_config_t*obj)
   obj->delay_ms_I2C(AHT10_DELAY_RESET);
   return aht10_OK;
 }
+
