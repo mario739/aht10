@@ -12,14 +12,15 @@
  #define AHT10_H
 
  #include <stdint.h> 
+ #include <stddef.h>
  
  /** @defgroup Comandos del driver
  *  @{
  */
-#define AHT10_ADDRESS_SLAVE                 (uint8_t) 0x38    /*!< Direccion de esclavo 7 bits       */
-#define AHT10_CMD_INITIALIZE                (uint8_t) 0xE1    /*!< Comando de inicializacion        */
-#define AHT10_CMD_TRIGGER_MEASUREMENT       (uint8_t) 0xAC    /*!< Comando para iniciar la lectura  */
-#define AHT10_CMD_SOFT_RESET                (uint8_t) 0xBA    /*!< Comando para reiniciar el sensor */
+#define AHT10_ADDRESS_SLAVE                  0x38U    /*!< Direccion de esclavo 7 bits       */
+#define AHT10_CMD_INITIALIZE                 0xE1U   /*!< Comando de inicializacion        */
+#define AHT10_CMD_TRIGGER_MEASUREMENT        0xACU    /*!< Comando para iniciar la lectura  */
+#define AHT10_CMD_SOFT_RESET                 0xBAU    /*!< Comando para reiniciar el sensor */
 /**
   * @}
   */
@@ -30,7 +31,7 @@
 #define AHT10_DELAY_POWER_ON                  40U      /*!<Retardo para el encendido        */
 #define AHT10_DELAY_RESET                     25U      /*!<Retardo de reset                 */
 #define AHT10_DELAY_MEASUREMENT               100U     /*!<Retardo inicializacion           */
-#define AHT10_DELAY_LAUNCH_MEASUREMENT        80U      /*!<Retardo para la medicion         */
+#define AHT10_DELAY_LAUNCH_MEASUREMENT        75U      /*!<Retardo para la medicion         */
 /**
   * @}
   */
@@ -38,7 +39,7 @@
 /** @defgroup Macros para la transformacion de a magnitudes reales
  * 
  */
-#define TEMPERATURE(A)                       (uint8_t) ((A *0.000191)-50)    /*!<Macro con la formula para obtener la temepratura en grados Centigrados */    
+#define TEMPERATURE(A)                       (int8_t) ((A *(int32_t)0.000191)-(int8_t)50)    /*!<Macro con la formula para obtener la temepratura en grados Centigrados */    
 #define HUMEDITY(A)                          (uint8_t) (A *0.000095)         /*!<Macro para obtener la humedad en porcentaje                            */
 /**
   * @}
@@ -48,8 +49,8 @@
 //! Tipo de datos para manejar el estado de la funcion 
 typedef enum
 {
-  aht10_OK      = 0,      //!< La funcion se ejecuto correctamente 
-  aht10_ERROR   = 1,      //!< La funcion produjo un error
+  AHT10_OK      = 0,      //!< La funcion se ejecuto correctamente 
+  AHT10_ERROR   = 1,      //!< La funcion produjo un error
 } aht10_status_fnc;
 
 //! Tipo de datos para manejar el estado del sensor 
@@ -92,7 +93,7 @@ typedef struct
 	 *  
 ***************************************************************************************************/
 
-void aht10Init(aht10_config_t *obj, aht10WriteFcn_t fncWritePort, aht10ReadFcn_t fncReadPort, delay1ms_t fncDelayPort,uint16_t addressSlave);
+void aht10Init(aht10_config_t *obj, aht10WriteFcn_t fncWritePort, aht10ReadFcn_t fncReadPort, delay1ms_t fncDelayPort);
 
 /**
  * @brief Funcion para obtener el estado del sensor
@@ -103,15 +104,6 @@ void aht10Init(aht10_config_t *obj, aht10WriteFcn_t fncWritePort, aht10ReadFcn_t
 aht10_status aht10_get_status(aht10_config_t *obj);
 
 /**
- * @brief Funcion para inizializar el sensor 
- * 
- * @param obj Estructura que contiene la configuracion del driver 
- * @return aht10_status_fnc  enumerador que devuelve el estado de la funcion
- */
-
-aht10_status_fnc aht10_start_measurement(aht10_config_t *obj);
-
-/**
  * @brief Funcion que lanza el inicio la conversion
  * 
  *  @details
@@ -120,7 +112,16 @@ aht10_status_fnc aht10_start_measurement(aht10_config_t *obj);
  * @return aht10_status_fnc enumerador que devuelve el estado de la funcion
  */
 
-aht10_status_fnc aht10_launch_measurement(aht10_config_t *obj);
+ aht10_status_fnc aht10_launch_measurement(aht10_config_t *obj);
+
+/**
+ * @brief Funcion para inizializar el sensor 
+ * 
+ * @param obj Estructura que contiene la configuracion del driver 
+ * @return aht10_status_fnc  enumerador que devuelve el estado de la funcion
+ */
+
+aht10_status_fnc aht10_start_measurement(aht10_config_t *obj);
 
 /**
  * @brief Funcion para obtener el dato de la humedad actual 
@@ -141,7 +142,7 @@ aht10_status_fnc aht10_get_humedity(aht10_config_t*obj, uint8_t *data);
  * @param data variable donde se asignara el resultado de la temperatura
  * @return aht10_status_fnc enumerador que devuelve el estado de la funcion
  */
-aht10_status_fnc aht10_get_temperature(aht10_config_t*obj, uint8_t *data);
+aht10_status_fnc aht10_get_temperature(aht10_config_t*obj, int8_t *data);
 
 /**
  * @brief Funcion que resetea el modulo 
