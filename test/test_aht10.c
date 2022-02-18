@@ -135,7 +135,7 @@ void test_probar_funcion_empezar_la_medicion_del_sensor(void)
     //Verificar si se cargaron los datos al estructura data_callback
     TEST_ASSERT_EQUAL_HEX(AHT10_ADDRESS_SLAVE,data_callback.adrees);
     TEST_ASSERT_EQUAL(AHT10_CMD_TRIGGER_MEASUREMENT,data_callback.buffer);
-    TEST_ASSERT_EQUAL(1,data_callback.amount);
+    TEST_ASSERT_EQUAL(3,data_callback.amount);
 }
 
 

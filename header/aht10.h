@@ -21,6 +21,9 @@
 #define AHT10_CMD_INITIALIZE                 0xE1U   /*!< Comando de inicializacion        */
 #define AHT10_CMD_TRIGGER_MEASUREMENT        0xACU    /*!< Comando para iniciar la lectura  */
 #define AHT10_CMD_SOFT_RESET                 0xBAU    /*!< Comando para reiniciar el sensor */
+#define AHT10_CMD_DATO_0                     0X33U
+#define AHT10_CMD_DATO_1                     0X00U
+
 /**
   * @}
   */
@@ -39,7 +42,7 @@
 /** @defgroup Macros para la transformacion de a magnitudes reales
  * 
  */
-#define TEMPERATURE(A)                       (int8_t) ((A *(int32_t)0.000191)-(int8_t)50)    /*!<Macro con la formula para obtener la temepratura en grados Centigrados */    
+#define TEMPERATURE(A)                       (int8_t) ((A *0.000191)-50)    /*!<Macro con la formula para obtener la temepratura en grados Centigrados */    
 #define HUMEDITY(A)                          (uint8_t) (A *0.000095)         /*!<Macro para obtener la humedad en porcentaje                            */
 /**
   * @}
@@ -70,11 +73,9 @@ typedef void (*delay1ms_t)(uint8_t);                                        /*!<
 //! Estructura para la configuracion del sensor 
 typedef struct 
 {
-    aht10WriteFcn_t  writeI2C;
-    aht10ReadFcn_t  readI2C;
-    delay1ms_t      delay_ms_I2C;    
-    uint8_t 		addresSlave;
-
+  aht10WriteFcn_t  writeI2C;
+  aht10ReadFcn_t  readI2C;
+  delay1ms_t      delay_ms_I2C;    
 }aht10_config_t;
 
 
