@@ -21,10 +21,10 @@ void aht10Init(aht10_config_t *obj, aht10WriteFcn_t fncWritePort, aht10ReadFcn_t
 
 aht10_status aht10_get_status(aht10_config_t *obj)
 {
-  uint8_t buffer[0]={0};
-  aht10_status_fnc status=AHT10_ERROR;
-  status= obj->readI2C(AHT10_ADDRESS_SLAVE,buffer,1);
-  if (status==AHT10_OK)
+  uint8_t buffer[1]={0};
+  obj->status_fun=AHT10_ERROR;
+  obj->status_fun= obj->readI2C(AHT10_ADDRESS_SLAVE,buffer,1);
+  if (AHT10_OK==obj->status_fun)
   {
     if (buffer[0]>>7==0)                     //El estado del sensor esta en la posicion 8 del byte por eso de desplaza 7 posiciones   
       return SENSOR_IDLE;
@@ -36,52 +36,56 @@ aht10_status aht10_get_status(aht10_config_t *obj)
 
 aht10_status_fnc aht10_start_measurement(aht10_config_t *obj)
 { 
-  uint8_t cmd[0]={AHT10_CMD_INITIALIZE};
-  aht10_status_fnc status = obj->writeI2C(AHT10_ADDRESS_SLAVE,cmd,1);
-  if (status==AHT10_OK)
+  uint8_t cmd[1]={AHT10_CMD_INITIALIZE};
+  obj->status_fun=AHT10_ERROR;
+  obj->status_fun = obj->writeI2C(AHT10_ADDRESS_SLAVE,cmd,1);
+  if (AHT10_OK==obj->status_fun)
   {
     obj->delay_ms_I2C(AHT10_DELAY_MEASUREMENT);
   }
-  return  status;
+  return  obj->status_fun;
 }
 
 aht10_status_fnc aht10_launch_measurement(aht10_config_t *obj)
 {
-  uint8_t cmd[2] = {AHT10_CMD_TRIGGER_MEASUREMENT,AHT10_CMD_DATO_0,AHT10_CMD_DATO_1};
-  aht10_status_fnc status = obj->writeI2C(AHT10_ADDRESS_SLAVE ,cmd,3);
-  if (status==AHT10_OK)
+  uint8_t cmd[3] = {AHT10_CMD_TRIGGER_MEASUREMENT,AHT10_CMD_DATO_0,AHT10_CMD_DATO_1};
+  obj->status_fun=AHT10_ERROR;
+  obj->status_fun = obj->writeI2C(AHT10_ADDRESS_SLAVE ,cmd,3);
+  if (obj->status_fun==AHT10_OK)
   {
     obj->delay_ms_I2C(AHT10_DELAY_LAUNCH_MEASUREMENT);
     if (aht10_get_status(obj)==SENSOR_IDLE)
     {
-      status=obj->writeI2C(AHT10_ADDRESS_SLAVE,cmd,3);
+      obj->status_fun=obj->writeI2C(AHT10_ADDRESS_SLAVE,cmd,3);
       obj->delay_ms_I2C(AHT10_DELAY_LAUNCH_MEASUREMENT);
-      return status;
+      return obj->status_fun;
     }
-    else status=AHT10_ERROR;
+    else obj->status_fun=AHT10_ERROR;
   }
-  return  status;
+  return  obj->status_fun;
 }
 
 aht10_status_fnc aht10_get_humedity(aht10_config_t*obj, uint8_t *data)
 {
+  
   if (obj== NULL)
   {
     return AHT10_ERROR;
-  } 
+  }
+  obj->status_fun=AHT10_ERROR;
   uint8_t bufferRead[6]={0};
   uint32_t data_humedity=0;
-  aht10_status_fnc status=aht10_launch_measurement(obj);
-  if (status==AHT10_OK)
+  obj->status_fun=aht10_launch_measurement(obj);
+  if (obj->status_fun==AHT10_OK)
   {
-    status= obj->readI2C(AHT10_ADDRESS_SLAVE,bufferRead,6);
-    if (status==AHT10_OK)
+    obj->status_fun= obj->readI2C(AHT10_ADDRESS_SLAVE,bufferRead,6);
+    if (obj->status_fun==AHT10_OK)
     {
       data_humedity=(((uint32_t)bufferRead[1]<<16) | ((uint16_t)bufferRead[2]<<8) | (bufferRead[3]))>>4;
       *data= HUMEDITY(data_humedity);
     }
   }
-  return status;
+  return obj->status_fun;
 }
 
 aht10_status_fnc aht10_get_temperature(aht10_config_t*obj, int8_t *data)
@@ -92,29 +96,29 @@ aht10_status_fnc aht10_get_temperature(aht10_config_t*obj, int8_t *data)
   } 
   uint8_t buffer_read[6]={0};
   uint32_t data_temperature=0;
-  aht10_status_fnc status=AHT10_ERROR;
-  status=aht10_launch_measurement(obj);
-  if (status==AHT10_OK)
+  obj->status_fun=AHT10_ERROR;
+  obj->status_fun=aht10_launch_measurement(obj);
+  if (obj->status_fun==AHT10_OK)
   {
-    status=obj->readI2C(AHT10_ADDRESS_SLAVE ,buffer_read,6);
-    if (status==AHT10_OK)
+    obj->status_fun=obj->readI2C(AHT10_ADDRESS_SLAVE ,buffer_read,6);
+    if (obj->status_fun==AHT10_OK)
     {
       data_temperature=((uint32_t)(buffer_read[3] & 0x0F)<<16) | ((uint16_t) buffer_read[4]<<8)| buffer_read[5];
       *data= TEMPERATURE(data_temperature);
     }
   }
-  return status;
+  return obj->status_fun;
 }
 
 aht10_status_fnc  aht10SoftReset(aht10_config_t*obj)
 {
-  uint8_t cmd[0]={AHT10_CMD_SOFT_RESET};
-  aht10_status_fnc status=AHT10_ERROR;
-  status=obj->writeI2C(AHT10_ADDRESS_SLAVE ,cmd,1);
-  if (status==AHT10_OK)
+  uint8_t cmd[1]={AHT10_CMD_SOFT_RESET};
+  obj->status_fun=AHT10_ERROR;
+  obj->status_fun=obj->writeI2C(AHT10_ADDRESS_SLAVE ,cmd,1);
+  if (obj->status_fun==AHT10_OK)
   {
     obj->delay_ms_I2C(AHT10_DELAY_RESET);
   }
-  return status;
+  return obj->status_fun;
 }
 

@@ -105,7 +105,6 @@ void test_probar_la_funcion_de_init_del_sensor(void)
 void test_probar_funcion_obtener_estado_idle_del_sensor(void)
 {
     //Verificar si el sensor se encuentra en estado idle
-
     TEST_ASSERT_EQUAL(SENSOR_IDLE,aht10_get_status(&aht10config));
 }
 
@@ -116,12 +115,10 @@ void test_probar_funcion_obtener_estado_idle_del_sensor(void)
 void test_probar_funcion_de_inicializacion_sensor(void)
 {
     TEST_ASSERT_EQUAL(AHT10_OK,aht10_start_measurement(&aht10config));
-
     //Verificar si se cargaron los datos al estructura data_callback
     TEST_ASSERT_EQUAL_HEX(AHT10_ADDRESS_SLAVE,data_callback.adrees);
     TEST_ASSERT_EQUAL(AHT10_CMD_INITIALIZE,data_callback.buffer);
     TEST_ASSERT_EQUAL(1,data_callback.amount);
-
 } 
 
 /**

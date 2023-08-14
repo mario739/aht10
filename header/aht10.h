@@ -76,6 +76,7 @@ typedef struct
   aht10WriteFcn_t  writeI2C;
   aht10ReadFcn_t  readI2C;
   delay1ms_t      delay_ms_I2C;    
+  aht10_status_fnc status_fun;
 }aht10_config_t;
 
 
