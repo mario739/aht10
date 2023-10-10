@@ -21,14 +21,14 @@ void aht10Init(aht10_config_t *obj, aht10WriteFcn_t fncWritePort, aht10ReadFcn_t
 
 aht10_status aht10_get_status(aht10_config_t *obj)
 {
-  uint8_t buffer[1]={0};
+  uint8_t buffer[8]={0};
   obj->status_fun=AHT10_ERROR;
   obj->status_fun= obj->readI2C(AHT10_ADDRESS_SLAVE,buffer,1);
   if (AHT10_OK==obj->status_fun)
   {
-    if (buffer[0]>>7==0)                     //El estado del sensor esta en la posicion 8 del byte por eso de desplaza 7 posiciones   
+    if (buffer[7]>>7==0)                     //El estado del sensor esta en la posicion 8 del byte por eso de desplaza 7 posiciones   
       return SENSOR_IDLE;
-    else if (buffer[0]>>7==1)
+    else if (buffer[7]>>7==1)
       return SENSOR_BUSY;
   }
   return SENSOR_BUSY;
@@ -67,11 +67,6 @@ aht10_status_fnc aht10_launch_measurement(aht10_config_t *obj)
 
 aht10_status_fnc aht10_get_humedity(aht10_config_t*obj, uint8_t *data)
 {
-  
-  if (obj== NULL)
-  {
-    return AHT10_ERROR;
-  }
   obj->status_fun=AHT10_ERROR;
   uint8_t bufferRead[6]={0};
   uint32_t data_humedity=0;
@@ -90,10 +85,6 @@ aht10_status_fnc aht10_get_humedity(aht10_config_t*obj, uint8_t *data)
 
 aht10_status_fnc aht10_get_temperature(aht10_config_t*obj, int8_t *data)
 {
-  if (obj== NULL)
-  {
-    return AHT10_ERROR;
-  } 
   uint8_t buffer_read[6]={0};
   uint32_t data_temperature=0;
   obj->status_fun=AHT10_ERROR;
