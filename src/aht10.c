@@ -21,14 +21,14 @@ void aht10Init(aht10_config_t *obj, aht10WriteFcn_t fncWritePort, aht10ReadFcn_t
 
 aht10_status aht10_get_status(aht10_config_t *obj)
 {
-  uint8_t buffer[8]={0};
+  uint8_t buffer=0;
   obj->status_fun=AHT10_ERROR;
-  obj->status_fun= obj->readI2C(AHT10_ADDRESS_SLAVE,buffer,1);
+  obj->status_fun= obj->readI2C(AHT10_ADDRESS_SLAVE,&buffer,1);
   if (AHT10_OK==obj->status_fun)
   {
-    if (buffer[7]>>7==0)                     //El estado del sensor esta en la posicion 8 del byte por eso de desplaza 7 posiciones   
+    if (buffer>>7==0)  //El estado del sensor esta en la posicion 8 del byte por eso de desplaza 7 posiciones   
       return SENSOR_IDLE;
-    else if (buffer[7]>>7==1)
+    else
       return SENSOR_BUSY;
   }
   return SENSOR_BUSY;

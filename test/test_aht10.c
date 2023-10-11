@@ -13,46 +13,9 @@
 #include "unity.h"
 #include "mock_i2c_functions.h"
 #include "aht10.h"
+#include "stdio.h"
 
-
-typedef struct
-{
-    uint8_t adrees;
-    uint8_t amount;
-    uint8_t buffer;
-}data_callback_st;
-
-//Variables globales 
-data_callback_st data_callback;
-uint8_t comando;
 aht10_config_t aht10config;
-
-/*aht10_status_fnc  read_I2C_STM32L432_port(uint8_t addr,uint8_t* buffer, uint8_t amount)
-{
-    uint8_t trama[6]={0,0,0,0,0,0};
-    uint8_t data=0;
-
-    if (amount==1)
-    {
-        *buffer=data;
-    }
-    else if (amount==6)
-    {
-        for (int i = 0; i<7; i++)
-        {
-           *buffer=trama[i];
-           buffer++;
-        }
-    }
-    return AHT10_OK;
-}
-aht10_status_fnc   write_I2C_STM32L432_port(uint8_t addr, uint8_t *buffer, uint8_t amount)
-{
-    data_callback.adrees=addr;
-    data_callback.buffer=*buffer;
-    data_callback.amount=amount; 
-    return AHT10_OK;
-}  */
 
 /**
  * @test Para probar la configuracion del driver
@@ -75,10 +38,18 @@ void test_probar_funcion_obtener_estado_idle_del_sensor(void)
 {
     //Verificar si el sensor se encuentra en estado idle
     uint8_t buffer[1]={0};
-    uint8_t data=256;
+    uint8_t data=0;
     read_I2C_STM32L432_port_ExpectAndReturn(AHT10_ADDRESS_SLAVE,buffer,1,AHT10_OK);
     read_I2C_STM32L432_port_ReturnThruPtr_buffer(&data);
     TEST_ASSERT_EQUAL(SENSOR_IDLE,aht10_get_status(&aht10config));
+    data=255;
+    read_I2C_STM32L432_port_ExpectAndReturn(AHT10_ADDRESS_SLAVE,buffer,1,AHT10_OK);
+    read_I2C_STM32L432_port_ReturnThruPtr_buffer(&data);
+    TEST_ASSERT_EQUAL(SENSOR_BUSY,aht10_get_status(&aht10config));
+
+    read_I2C_STM32L432_port_ExpectAndReturn(AHT10_ADDRESS_SLAVE,buffer,1,AHT10_ERROR);
+    TEST_ASSERT_EQUAL(SENSOR_BUSY,aht10_get_status(&aht10config));
+
 }
 
 /**
@@ -91,6 +62,9 @@ void test_probar_funcion_de_inicializacion_sensor(void)
     write_I2C_STM32L432_port_ExpectAndReturn(AHT10_ADDRESS_SLAVE,cmd,1,AHT10_OK);
     delay_STM32L432_port_Expect(AHT10_DELAY_MEASUREMENT);
     TEST_ASSERT_EQUAL(AHT10_OK,aht10_start_measurement(&aht10config));
+
+    write_I2C_STM32L432_port_ExpectAndReturn(AHT10_ADDRESS_SLAVE,cmd,1,AHT10_ERROR);
+    TEST_ASSERT_EQUAL(AHT10_ERROR,aht10_start_measurement(&aht10config));
 } 
 
 /**
@@ -136,6 +110,18 @@ void test_probar_funcion_obtener_humedad(void)
     read_I2C_STM32L432_port_ExpectAndReturn(AHT10_ADDRESS_SLAVE,bufferRead,6,AHT10_OK);
     TEST_ASSERT_EQUAL(AHT10_OK,aht10_get_humedity(&aht10config,&humedad));
     TEST_ASSERT_EQUAL(0,humedad);
+
+    write_I2C_STM32L432_port_ExpectAndReturn(AHT10_ADDRESS_SLAVE,cmd,3,AHT10_ERROR);
+    TEST_ASSERT_EQUAL(AHT10_ERROR,aht10_get_humedity(&aht10config,&humedad));
+
+
+    write_I2C_STM32L432_port_ExpectAndReturn(AHT10_ADDRESS_SLAVE,cmd,3,AHT10_OK);
+    delay_STM32L432_port_Expect(AHT10_DELAY_LAUNCH_MEASUREMENT);
+    read_I2C_STM32L432_port_ExpectAndReturn(AHT10_ADDRESS_SLAVE,buffer,1,AHT10_OK);
+    write_I2C_STM32L432_port_ExpectAndReturn(AHT10_ADDRESS_SLAVE,cmd,3,AHT10_OK);
+    delay_STM32L432_port_Expect(AHT10_DELAY_LAUNCH_MEASUREMENT); 
+    read_I2C_STM32L432_port_ExpectAndReturn(AHT10_ADDRESS_SLAVE,bufferRead,6,AHT10_ERROR);
+    TEST_ASSERT_EQUAL(AHT10_ERROR,aht10_get_humedity(&aht10config,&humedad));
 }
 
 /**
@@ -159,6 +145,18 @@ void test_probar_funcion_obtener_temperatura(void)
     TEST_ASSERT_EQUAL(AHT10_OK,aht10_get_temperature(&aht10config,&temperatura));
     //Verificar el dato obtenido de la temperatura 
     TEST_ASSERT_EQUAL(-50,temperatura);
+
+    write_I2C_STM32L432_port_ExpectAndReturn(AHT10_ADDRESS_SLAVE,cmd,3,AHT10_OK);
+    delay_STM32L432_port_Expect(AHT10_DELAY_LAUNCH_MEASUREMENT);
+    read_I2C_STM32L432_port_ExpectAndReturn(AHT10_ADDRESS_SLAVE,buffer,1,AHT10_OK);
+    write_I2C_STM32L432_port_ExpectAndReturn(AHT10_ADDRESS_SLAVE,cmd,3,AHT10_OK);
+    delay_STM32L432_port_Expect(AHT10_DELAY_LAUNCH_MEASUREMENT); 
+    read_I2C_STM32L432_port_ExpectAndReturn(AHT10_ADDRESS_SLAVE,bufferRead,6,AHT10_ERROR);    
+    TEST_ASSERT_EQUAL(AHT10_ERROR,aht10_get_temperature(&aht10config,&temperatura));
+
+
+    write_I2C_STM32L432_port_ExpectAndReturn(AHT10_ADDRESS_SLAVE,cmd,3,AHT10_ERROR);   
+    TEST_ASSERT_EQUAL(AHT10_ERROR,aht10_get_temperature(&aht10config,&temperatura));
 }
 
 
@@ -172,5 +170,8 @@ void test_probar_funcion_reset(void)
     write_I2C_STM32L432_port_ExpectAndReturn(AHT10_ADDRESS_SLAVE ,cmd,1,AHT10_OK);
     delay_STM32L432_port_Expect(AHT10_DELAY_RESET);
     TEST_ASSERT_EQUAL(AHT10_OK,aht10SoftReset(&aht10config));
+
+    write_I2C_STM32L432_port_ExpectAndReturn(AHT10_ADDRESS_SLAVE ,cmd,1,AHT10_ERROR);
+    TEST_ASSERT_EQUAL(AHT10_ERROR,aht10SoftReset(&aht10config));
 
 }
