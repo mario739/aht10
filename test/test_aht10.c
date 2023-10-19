@@ -34,7 +34,7 @@ void test_probar_la_funcion_de_init_del_sensor(void)
  * @test Probar el estado del sensor 
  * 
  */
-void test_probar_funcion_obtener_estado_idle_del_sensor(void)
+void test_estado_del_sensor(void)
 {
     //Verificar si el sensor se encuentra en estado idle
     uint8_t buffer[1]={0};
@@ -96,7 +96,7 @@ void test_probar_funcion_empezar_la_medicion_del_sensor(void)
  * @test Lectura de la humedad 
  * 
  */
-void test_probar_funcion_obtener_humedad(void)
+void test_obtener_humedad(void)
 {
     uint8_t bufferRead[6]={0};
     uint8_t humedad=0;
@@ -113,7 +113,6 @@ void test_probar_funcion_obtener_humedad(void)
 
     write_I2C_STM32L432_port_ExpectAndReturn(AHT10_ADDRESS_SLAVE,cmd,3,AHT10_ERROR);
     TEST_ASSERT_EQUAL(AHT10_ERROR,aht10_get_humedity(&aht10config,&humedad));
-
 
     write_I2C_STM32L432_port_ExpectAndReturn(AHT10_ADDRESS_SLAVE,cmd,3,AHT10_OK);
     delay_STM32L432_port_Expect(AHT10_DELAY_LAUNCH_MEASUREMENT);
